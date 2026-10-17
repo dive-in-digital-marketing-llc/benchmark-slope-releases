@@ -1,0 +1,5 @@
+{
+  "ios":     { "latest": "1.0.2", "minimum": "1.0.0", "store": "https://apps.apple.com/app/id6751212219" },
+  "android": { "latest": "1.0.2", "minimum": "1.0.0", "store": "https://play.google.com/store/apps/details?id=com.fifthmage.benchmarkslope" },
+  "updated": "2026-10-17"
+}

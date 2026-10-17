@@ -4,7 +4,7 @@ name: security
 on:
   pull_request:
   push:
-    branches: [develop]
+    branches: [release]
 jobs:
   security-scan:
     uses: dive-in-digital-marketing-llc/didm-security/.github/workflows/security-scan.yml@v1

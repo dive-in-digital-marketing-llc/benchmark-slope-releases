@@ -1,10 +1,39 @@
-# Org-required security scan. The job id must stay `security-scan`: the status check the
-# organization ruleset requires is `security-scan / security-scan`.
+# Required status check: the org ruleset expects `security-scan / security-scan`.
+# This repo is PUBLIC, and GitHub does not let a public repo call the org's reusable
+# workflow in the private didm-security repo, so the job is self-contained:
+# it validates version.json and scans the tree for secrets.
 name: security
 on:
   pull_request:
   push:
     branches: [release]
+permissions:
+  contents: read
 jobs:
   security-scan:
-    uses: dive-in-digital-marketing-llc/didm-security/.github/workflows/security-scan.yml@v1
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate version.json
+        run: |
+          python3 - <<'PY'
+          import json, re
+          v = json.load(open("version.json"))
+          semver = re.compile(r"^\d+\.\d+\.\d+$")
+          for p in ("ios", "android"):
+              e = v[p]
+              assert semver.match(e["latest"]), (p, "latest")
+              assert semver.match(e["minimum"]), (p, "minimum")
+              assert e["store"].startswith("https://"), (p, "store")
+          assert re.match(r"^\d{4}-\d{2}-\d{2}$", v["updated"])
+          print("version.json OK:", {p: v[p]["latest"] for p in ("ios", "android")})
+          PY
+      - name: Secret scan (trufflehog, whole history)
+        uses: trufflesecurity/trufflehog@v3.82.13
+        with:
+          path: ./
+          base: ""
+          head: HEAD
+          extra_args: --only-verified

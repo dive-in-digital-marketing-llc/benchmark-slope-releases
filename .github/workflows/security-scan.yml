@@ -1,0 +1,10 @@
+# Org-required security scan. The job id must stay `security-scan`: the status check the
+# organization ruleset requires is `security-scan / security-scan`.
+name: security
+on:
+  pull_request:
+  push:
+    branches: [develop]
+jobs:
+  security-scan:
+    uses: dive-in-digital-marketing-llc/didm-security/.github/workflows/security-scan.yml@v1

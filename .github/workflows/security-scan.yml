@@ -1,0 +1,14 @@
+# Required status check: the org ruleset expects `security-scan / security-scan`,
+# i.e. a job id `security-scan` that calls a workflow whose job is also `security-scan`.
+# This repo is PUBLIC and cannot call the private didm-security reusable workflow,
+# so it calls the local scan.yml (version.json validation + secret scan).
+name: security
+on:
+  pull_request:
+  push:
+    branches: [release]
+permissions:
+  contents: read
+jobs:
+  security-scan:
+    uses: ./.github/workflows/scan.yml
